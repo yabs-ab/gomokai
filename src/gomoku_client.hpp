@@ -2,6 +2,9 @@
 #define GOMOKUCLIENT_HPP_
 
 #include <vector>
+#include <iostream>
+
+using namespace std;
 
 class Coordinate {
 public:
@@ -33,10 +36,29 @@ public:
         return m_board[xIn + 19 * yIn];
     }
 
-	void set_point(Coordinate coord, PointType pointType)
+	void set_point(Coordinate coord, PointType pointTypeIn)
 	{
-		m_board[coord.x + 19 * coord.y] = pointType;
+		m_board[coord.x + 19 * coord.y] = pointTypeIn;
 	}
+
+    void set_point(int xIn, int yIn, PointType pointTypeIn)
+    {
+		m_board[xIn + 19 * yIn] = pointTypeIn;
+    }
+
+    void print_board()
+    {
+        for(int i=0; i<19; ++i)
+        {
+            for(int j=0; j<19; ++j)
+            {
+                if(point(j,i) == EMPTY) { cout<<" . "; }
+                if(point(j,i) == BLACK) { cout<<" O "; }
+                if(point(j,i) == WHITE) { cout<<" X "; }
+            }
+            cout<<endl;
+        }
+    }
 	
 private:
 	std::vector<PointType> m_board;
