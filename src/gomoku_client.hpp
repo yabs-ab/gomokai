@@ -7,6 +7,13 @@ class Coordinate {
 public:
 	int x;
 	int y;
+	Coordinate(int x_, int y_) : x(x_), y(y_) { }
+};
+
+enum PointType {
+	EMPTY = 0,
+	WHITE,
+	BLACK
 };
 
 class Board {
@@ -15,13 +22,6 @@ public:
 		: m_board(19 * 19)
 	{
 	}
-
-	enum PointType {
-		EMPTY = 0,
-		WHITE,
-		BLACK
-	};
-	
 
 	PointType point(Coordinate coord)
 	{
@@ -39,6 +39,13 @@ private:
 
 class GomokuClient {
 public:
+	const PointType m_color;
+	
+	GomokuClient(color)
+		: m_color(color)
+	{
+	}
+
 	virtual Coordinate make_a_move(Board& board) = 0;
 };
 
