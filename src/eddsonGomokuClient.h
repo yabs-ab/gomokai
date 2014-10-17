@@ -18,6 +18,6 @@ private:
 
 	void getBoardPoints(Board*, BOARD_POINTS*);
 	Coordinate getEnemysLastMove(BOARD_POINTS*, BOARD_POINTS*);
-	Coordinate predictNextMove(Coordinate*, Coordinate*)
+	Coordinate predictNextMove(Coordinate*, Coordinate*);
 };
 
