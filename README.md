@@ -1,4 +1,4 @@
 gomokai
 =======
 
-Gomoku-ish AI challenge framwork
+Gomoku-ish AI challenge framework
