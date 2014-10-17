@@ -1,10 +1,12 @@
 #ifndef GOMOKUCLIENT_HPP_
 #define GOMOKUCLIENT_HPP_
 
+#include <vector>
+
 class Coordinate {
 public:
 	int x;
-	int y
+	int y;
 };
 
 class Board {
