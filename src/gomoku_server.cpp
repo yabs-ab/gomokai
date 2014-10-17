@@ -30,10 +30,10 @@ void fight(GomokuClient& a, GomokuClient& b)
 	Board board;
 	
 	for (int i = 0; i < (19*19-1)/2; ++i) {
-		board.set_point(a.make_a_move(a), WHITE);
-		board.set_point(a.make_a_move(b), BLACK);
+		board.set_point(a.make_a_move(board), WHITE);
+		board.set_point(a.make_a_move(board), BLACK);
 		
-		board.print();
+		board.print_board();
 		std::system("sleep 1");
 	}	
 }

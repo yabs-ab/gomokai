@@ -5,7 +5,7 @@
 #define BOARD_POINTS std::vector<PointType>
 
 class eddsonGomokuClient :
-	public GomokuClient
+public GomokuClient
 {
 public:
 	eddsonGomokuClient(PointType);
@@ -20,7 +20,7 @@ private:
 	std::knuth_b generator;
 	std::uniform_int_distribution<int> distribution;
 
-	bool eddsonGomokuClient::isMeOrEmpty(PointType);
+	bool isMeOrEmpty(PointType);
 	BOARD_POINTS* getBoardPoints(Board*);
 	Coordinate getEnemysLastMove(BOARD_POINTS*, BOARD_POINTS*);
 	Coordinate predictNextMove(Coordinate*, Coordinate*);
