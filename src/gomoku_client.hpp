@@ -4,7 +4,8 @@
 class Coordinate {
 public:
 	int x;
-	int y
+	int y;
+	Coordinate(int x_, int y_) : x(x_), y(y_) { }
 };
 
 class Board {
