@@ -41,7 +41,7 @@ class GomokuClient {
 public:
 	const PointType m_color;
 	
-	GomokuClient(color)
+	GomokuClient(PointType color)
 		: m_color(color)
 	{
 	}
