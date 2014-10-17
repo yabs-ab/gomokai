@@ -28,10 +28,10 @@ public:
 		return m_board[coord.x + 19 * coord.y];
 	}
 
-    PointType point(int xIn, int yIn)
-    {
-        return m_board[xIn + 19 * yIn];
-    }
+	PointType point(int xIn, int yIn)
+	{
+		return m_board[xIn + 19 * yIn];
+	}
 
 	void set_point(Coordinate coord, PointType pointType)
 	{
