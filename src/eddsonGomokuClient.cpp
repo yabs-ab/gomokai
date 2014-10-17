@@ -67,7 +67,7 @@ Coordinate eddsonGomokuClient::make_a_move(Board& board) {
 		nextMove = Coordinate(distribution(generator), distribution(generator));
 	else {
 		Coordinate dir = this->predictNextMove(&currentEnemyMove, &lastMove);
-		nextMove = addCoords(lastMove, dir);
+        nextMove = addCoords(currentEnemyMove, dir);
 	}
 
 	lastMove = nextMove;
