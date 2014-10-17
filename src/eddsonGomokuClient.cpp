@@ -1,16 +1,44 @@
 #include "eddsonGomokuClient.h"
+
 const Coordinate null_coord(-1, -1);
 
-void eddsonGomokuClient::getBoardPoints(Board* board, BOARD_POINTS* boardPoints) {
+bool isEqualCoords(Coordinate a, Coordinate b) {
+	return a.x == b.x && a.y == b.y;
+}
+Coordinate addCoords(Coordinate a, Coordinate b) {
+	return Coordinate(a.x + b.x, a.y + b.y);
+}
+bool isNullCoord(Coordinate coord) {
+	return isEqualCoords(coord, null_coord);
+}
+
+
+eddsonGomokuClient::eddsonGomokuClient(PointType color) : GomokuClient(color), lastMove(-1, -1), distribution(0, 18)
+{
+	lastBoard = new BOARD_POINTS();
+}
+
+
+eddsonGomokuClient::~eddsonGomokuClient()
+{
+}
+
+bool eddsonGomokuClient::isMeOrEmpty(PointType p) {
+	return p == EMPTY || p == this->m_color;
+}
+
+BOARD_POINTS* eddsonGomokuClient::getBoardPoints(Board* board) {
+	BOARD_POINTS* boardPoints = new BOARD_POINTS();
 	for (auto i = 0; i < 19*19; i++)
 		boardPoints->push_back(board->point(Coordinate(i % 19, i / 19)));
+	return boardPoints;
 }
 
 Coordinate eddsonGomokuClient::getEnemysLastMove(BOARD_POINTS* currentBoard, BOARD_POINTS* lastBoard) {
 	Coordinate coord = null_coord;
 	for (auto i = 0; i < 19*19; i++)
 	{
-		if ((*currentBoard)[i] != EMPTY && (*currentBoard)[i] != this->m_color && (*currentBoard)[i] != (*lastBoard)[i])
+		if (!isMeOrEmpty((*currentBoard)[i]) && (*currentBoard)[i] != (*lastBoard)[i])
 		{
 			coord = Coordinate(i % 19, i / 19);
 			break;
@@ -30,25 +58,19 @@ Coordinate eddsonGomokuClient::predictNextMove(Coordinate* currentMove, Coordina
 	return Coordinate(dx, dy);
 }
 
-eddsonGomokuClient::eddsonGomokuClient(PointType color) : GomokuClient(color), lastMove(0,0)
-{
-	lastBoard = new BOARD_POINTS();
-}
-
-
-eddsonGomokuClient::~eddsonGomokuClient()
-{
-}
-
 Coordinate eddsonGomokuClient::make_a_move(Board& board) {
-	Coordinate coord(0,0);
-	BOARD_POINTS *currentBoard = new BOARD_POINTS();
-	getBoardPoints(&board, currentBoard);
-	Coordinate currentMove = this->getEnemysLastMove(currentBoard, lastBoard);
+	Coordinate nextMove(0,0);
+	BOARD_POINTS* currentBoard = getBoardPoints(&board);
+	Coordinate currentEnemyMove = this->getEnemysLastMove(currentBoard, lastBoard);
 
-	coord = currentMove;
+	if (isNullCoord(currentEnemyMove) || isNullCoord(lastMove))
+		nextMove = Coordinate(distribution(generator), distribution(generator));
+	else {
+		Coordinate dir = this->predictNextMove(&currentEnemyMove, &lastMove);
+		nextMove = addCoords(lastMove, dir);
+	}
 
-	lastMove = currentMove;
+	lastMove = nextMove;
 	lastBoard = currentBoard;
-	return coord;
+	return nextMove;
 }
