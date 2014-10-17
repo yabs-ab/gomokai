@@ -21,6 +21,8 @@ enum PointType {
 
 class Board {
 public:
+	struct OutOfRange {};
+	
 	Board()
 		: m_board(19 * 19)
 	{
@@ -28,22 +30,38 @@ public:
 
 	PointType point(Coordinate coord)
 	{
+		if (coord.x < 0 || coord.x > 18 ||
+		    coord.y < 0 || coord.y > 18)
+			throw OutOfRange();
+
 		return m_board[coord.x + 19 * coord.y];
 	}
 
 	PointType point(int xIn, int yIn)
 	{
+		if (xIn < 0 || xIn > 18 ||
+		    yIn < 0 || yIn > 18)
+			throw OutOfRange();
+		
 		return m_board[xIn + 19 * yIn];
 	}
 
 	void set_point(Coordinate coord, PointType pointTypeIn)
 	{
+		if (coord.x < 0 || coord.x > 18 ||
+		    coord.y < 0 || coord.y > 18)
+			throw OutOfRange();
+
 		m_board[coord.x + 19 * coord.y] = pointTypeIn;
 	}
 
     void set_point(int xIn, int yIn, PointType pointTypeIn)
     {
-		m_board[xIn + 19 * yIn] = pointTypeIn;
+	    if (xIn < 0 || xIn > 18 ||
+		yIn < 0 || yIn > 18)
+		    throw OutOfRange();
+	    
+	    m_board[xIn + 19 * yIn] = pointTypeIn;
     }
 
     void print_board()
