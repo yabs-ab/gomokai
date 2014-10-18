@@ -177,9 +177,15 @@ class MyClient1 : public GomokuClient
 		c=go_over_the_board_three(opponentColor,board);
 		//ATTACK
 		if(nomovemade)
+		{
 			std::cout<<"attack"<<std::endl;
 			c=go_over_the_board_three(m_color,board); // checks only for already existing 3-same-color
+		}
 		if(nomovemade)
+		{
+			// TODO: check for split threes?
+//		if(nomovemade)
+			// RANDOM MOVE
 			std::cout<<"random move"<<std::endl;
 			 /* initialize random seed: */
 			srand (time(NULL));
@@ -190,7 +196,7 @@ class MyClient1 : public GomokuClient
 			//std::cout<<"Making first move."<<std::endl;
 			//Q: is there a strategic first move?
 			//board.set_point(c,m_color);
-
+		}
 		return c;
 			//randomly put a point at some EMPTY area
 			// or try to find your own 3-areas and try to continue that streak
