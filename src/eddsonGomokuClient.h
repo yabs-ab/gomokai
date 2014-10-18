@@ -1,5 +1,4 @@
 #pragma once
-#include <random>
 #include "gomoku_client.hpp"
 
 #define BOARD_POINTS std::vector<PointType>
@@ -15,14 +14,11 @@ public:
 
 private:
 	Coordinate lastMove;
-	std::vector<PointType>* lastBoard;
-
-	std::knuth_b generator;
-	std::uniform_int_distribution<int> distribution;
+    Board* board;
 
 	bool isMeOrEmpty(PointType);
-	BOARD_POINTS* getBoardPoints(Board*);
-	Coordinate getEnemysLastMove(BOARD_POINTS*, BOARD_POINTS*);
-	Coordinate predictNextMove(Coordinate*, Coordinate*);
+	BOARD_POINTS getBoardPoints(Board);
+	Coordinate getEnemysMove(BOARD_POINTS, BOARD_POINTS);
+    Coordinate predictNextMove(BOARD_POINTS, BOARD_POINTS);
 };
 
