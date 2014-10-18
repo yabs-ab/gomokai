@@ -20,25 +20,37 @@ int AndersGomoku::check_n(Board& b, Coordinate c) {
     
     int ret_val = 0;
     
-    // forward
+    // forward (x+1)
     temp.x = temp.x+1;
-    if (!b.test_range(temp))
-        ret_val += check_val(b,temp);
-    // back
+    if (!b.test_range(temp)) ret_val += check_val(b,temp);
+    // back (x-1)
     temp.x = temp.x-2;
-    if (!b.test_range(temp) )
-        ret_val += check_val(b,temp);
+    if (!b.test_range(temp) ) ret_val += check_val(b,temp);
     // center
     temp.x = temp.x+1;
     
-    // down
+    // down (y+1)
     temp.y = temp.y+1;
-    if (!b.test_range(temp))
-        ret_val += check_val(b,temp);
-    // up
+    if (!b.test_range(temp)) ret_val += check_val(b,temp);
+    // up (y-1)
     temp.y = temp.y-2;
-    if (!b.test_range(temp))
-        ret_val += check_val(b,temp);
+    if (!b.test_range(temp)) ret_val += check_val(b,temp);
+    
+    // up (y-1), forward (x+1)
+    temp.x = temp.x+1;
+    if (!b.test_range(temp)) ret_val += check_val(b,temp);
+    
+    // down (y+1), forward (x+1)
+    temp.y = temp.y+2;
+    if (!b.test_range(temp)) ret_val += check_val(b,temp);
+    
+    // down (y+1), back (x-1)
+    temp.x = temp.x-2;
+    if (!b.test_range(temp)) ret_val += check_val(b,temp);
+
+    // up (y-1), back (x+1)
+    temp.y = temp.y-2;
+    if (!b.test_range(temp)) ret_val += check_val(b,temp);
     
     return ret_val;
 }
@@ -58,7 +70,8 @@ Coordinate AndersGomoku::make_a_move(Board& b) {
     std::vector<Coordinate> emptyPlaces;
     std::vector<Coordinate> myPlaces;
     std::vector<Coordinate> itsPlaces;
-    std::vector<int> points;
+
+    ScoreBoard sb;
     
     for(int i=0; i<19; ++i)
     {
@@ -66,7 +79,7 @@ Coordinate AndersGomoku::make_a_move(Board& b) {
         {
             if ( b.point(i,j) == EMPTY) {
                 emptyPlaces.push_back( Coordinate(i,j));
-                points.push_back(0);
+                sb.set_point(i,j,0);
             } else if ( b.point(i,j) == m_color) {
                 myPlaces.push_back( Coordinate(i,j));
             } else {
@@ -82,17 +95,30 @@ Coordinate AndersGomoku::make_a_move(Board& b) {
     }
     
     int max_point_i=0;
+    int max_value = 0;
     for (int i = 0; i < emptyPlaces.size(); ++i) {
-        points[i] = check_n(b, emptyPlaces[i]);
-//        cout << ", " << points[i];
-        if ( max_point_i < points[i])
+        sb.set_point( emptyPlaces[i], check_n(b, emptyPlaces[i]) );
+        
+        if ( max_value < sb.point( emptyPlaces[i])) {
             max_point_i = i;
+            max_value = sb.point( emptyPlaces[i]);
+        }
 
     }
-//    cout << endl;
+    
+//    sb.print_board();
+    cout << "Max score: " << max_value << endl;
     
     return emptyPlaces[max_point_i];
 }
+
+
+
+
+
+
+
+
 
 
 
