@@ -34,8 +34,115 @@ class MyClient1 : public GomokuClient
 
 	}
 
+	bool check_color_existence(int x, int y, PointType colortocheckfor, Board& board)
+	{
+		return check_if_in_range(x,y) && board.point(Coordinate(x,y))==colortocheckfor;
+	}
+
+	bool check_color_empty(int x, int y, Board& board)
+	{
+		return check_if_in_range(x,y) && board.point(Coordinate(x,y))==EMPTY;
+	}
+
+	Coordinate go_over_the_board_four(PointType colortocheckfor, Board& board)
+	{
+		Coordinate c(-1,-1);
+		for(int x=0; x<19; x++)
+		{
+			for(int y=0; y<19; y++)
+			{
+				//std::cout<<x<<" "<<y<<std::endl;
+				PointType p = board.point(Coordinate(x,y));
+
+				if(p==colortocheckfor)
+				{
+					//horizontal
+					if(check_color_existence(x+1,y,colortocheckfor,board) && check_color_existence(x+2,y,colortocheckfor,board) && check_color_existence(x+3,y,colortocheckfor,board) )
+					{
+						if(check_color_empty(x+4,y,board))
+						{
+							std::cout<<"4) x+ check 1"<<std::endl;
+							c=Coordinate(x+4,y);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+						else if(check_color_empty(x-1,y,board))
+						{
+							std::cout<<"4) x+ check 2"<<std::endl;
+							c=Coordinate(x-1,y);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+					}
+					else if(check_color_existence(x,y-1,colortocheckfor,board) && check_color_existence(x,y-2,colortocheckfor,board) && check_color_existence(x,y-3,colortocheckfor,board) )
+					{
+						if(check_color_empty(x,y-4,board))
+						{
+							std::cout<<"4) y- check 1"<<std::endl;
+							c=Coordinate(x,y-4);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+						else if(check_color_empty(x,y+1,board))
+						{
+							std::cout<<"4) y- check 2"<<std::endl;
+							c=Coordinate(x,y+1);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+					}
+					else if(check_color_existence(x-1,y+1,colortocheckfor,board) && check_color_existence(x-2,y+2,colortocheckfor,board) && check_color_existence(x-3,y+3,colortocheckfor,board) )
+					{
+						if(check_color_empty(x-4,y+4,board))
+						{
+							std::cout<<"4) x,y/ check 1"<<std::endl;
+							c=Coordinate(x-4,y+4);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+						else if(check_color_empty(x+1,y-1,board))
+						{
+							std::cout<<"4) x,y/ check 2"<<std::endl;
+							c=Coordinate(x+1,y-1);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+					}
+					else if(check_color_existence(x-1,y-1,colortocheckfor,board) && check_color_existence(x-2,y-2,colortocheckfor,board) && check_color_existence(x-3,y-3,colortocheckfor,board) )
+					{
+						if(check_color_empty(x-4,y-4,board))
+						{
+							std::cout<<"4) x,y\\ check 1"<<std::endl;
+							c=Coordinate(x-4,y-4);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+						else if(check_color_empty(x+1,y+1,board))
+						{
+							std::cout<<"4) x,y\\ check 2"<<std::endl;
+							c=Coordinate(x+1,y+1);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+					}
+				}
+			}
+		}
+
+	
+	}
+
 	Coordinate go_over_the_board_three(PointType colortocheckfor, Board& board)
 	{
+
 		Coordinate c(-1,-1);
 		for(int x=0; x<19; x++)
 		{
@@ -281,14 +388,25 @@ class MyClient1 : public GomokuClient
 	{
 		nomovemade=true;
 		Coordinate c(-1,-1);
-			
-		//DEFENSE
-		std::cout<<"defense"<<std::endl;
-		c=go_over_the_board_three(opponentColor,board);
+
+		//DEFENSE and ATTACK for 4s
+		std::cout<<"defense lead"<<std::endl;
+		c=go_over_the_board_four(opponentColor,board);
+		if(nomovemade)
+		{
+			std::cout<<"attack lead"<<std::endl;
+			c=go_over_the_board_four(m_color,board);
+		}
+		//DEFENSE and ATTACK for 3s
+		if(nomovemade)
+		{
+			std::cout<<"defense support"<<std::endl;
+			c=go_over_the_board_three(opponentColor,board);
+		}
 		//ATTACK
 		if(nomovemade)
 		{
-			std::cout<<"attack"<<std::endl;
+			std::cout<<"attack support"<<std::endl;
 			c=go_over_the_board_three(m_color,board); // checks only for already existing 3-same-color
 		}
 		if(nomovemade)
