@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <cstdlib>
 #include "gomoku_client.hpp"
 
@@ -28,13 +29,16 @@ bool five_diagonally_left(const Board& b, Coordinate c)
 void fight(GomokuClient& a, GomokuClient& b)
 {
 	Board board;
+	std::string tmp;
 	
 	for (int i = 0; i < (19*19-1)/2; ++i) {
 		board.set_point(a.make_a_move(board), WHITE);
-		board.set_point(a.make_a_move(board), BLACK);
-		
 		board.print_board();
-		std::system("sleep 1");
+		std::getline(std::cin, tmp);
+
+		board.set_point(a.make_a_move(board), BLACK);
+		board.print_board();
+		std::getline(std::cin, tmp);
 	}	
 }
 
