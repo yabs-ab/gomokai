@@ -6,19 +6,59 @@
 
 AndersGomoku::AndersGomoku(PointType p ) : GomokuClient(p) {
 
+    if (m_color == WHITE)
+        itsColor = BLACK;
+    
 }
 
-Coordinate AndersGomoku::make_a_move(Board& b) {
+int AndersGomoku::check_n(Board& b, Coordinate c) {
+    //
+    //
+    //
     
-    Coordinate c(3,3);
+    Coordinate temp(c.x, c.y);
+    
+    int ret_val = 0;
+    
+    // forward
+    temp.x = temp.x+1;
+    if (!b.test_range(temp))
+        ret_val += check_val(b,temp);
+    // back
+    temp.x = temp.x-2;
+    if (!b.test_range(temp) )
+        ret_val += check_val(b,temp);
+    // center
+    temp.x = temp.x+1;
+    
+    // down
+    temp.y = temp.y+1;
+    if (!b.test_range(temp))
+        ret_val += check_val(b,temp);
+    // up
+    temp.y = temp.y-2;
+    if (!b.test_range(temp))
+        ret_val += check_val(b,temp);
+    
+    return ret_val;
+}
+
+int AndersGomoku::check_val(Board& b, Coordinate c) {
+    if (b.point(c) == m_color) {
+        return 1;
+    } else if (b.point(c) == itsColor) {
+            return -1;
+    }
+    return 0;
+}
+
+
+Coordinate AndersGomoku::make_a_move(Board& b) {
     
     std::vector<Coordinate> emptyPlaces;
     std::vector<Coordinate> myPlaces;
     std::vector<Coordinate> itsPlaces;
-    
-//    b.set_point(2,4,m_color);
-//    b.set_point(3,6,m_color);
-//    b.set_point(1,1,m_color);
+    std::vector<int> points;
     
     for(int i=0; i<19; ++i)
     {
@@ -26,6 +66,7 @@ Coordinate AndersGomoku::make_a_move(Board& b) {
         {
             if ( b.point(i,j) == EMPTY) {
                 emptyPlaces.push_back( Coordinate(i,j));
+                points.push_back(0);
             } else if ( b.point(i,j) == m_color) {
                 myPlaces.push_back( Coordinate(i,j));
             } else {
@@ -34,21 +75,23 @@ Coordinate AndersGomoku::make_a_move(Board& b) {
         }
     }
 
-    for ( Coordinate coord : myPlaces) {
-        Coordinate temp(coord.x+1, coord.y);
-        if ( b.point( temp) == EMPTY ) {
-            c.x = temp.x;
-            c.y = temp.y;
-        }
+    // init draw
+    Coordinate c(3,3);
+    if ( b.point(c.x,c.y) == EMPTY ) {
+        return c;
     }
     
-/*    b.print_board();
+    int max_point_i=0;
+    for (int i = 0; i < emptyPlaces.size(); ++i) {
+        points[i] = check_n(b, emptyPlaces[i]);
+//        cout << ", " << points[i];
+        if ( max_point_i < points[i])
+            max_point_i = i;
 
-    cout << emptyPlaces.size() << endl;
-    cout << myPlaces.size() << endl;
-    cout << itsPlaces.size() << endl; */
+    }
+//    cout << endl;
     
-    return c;
+    return emptyPlaces[max_point_i];
 }
 
 

@@ -30,13 +30,17 @@ public:
 
 	PointType point(Coordinate coord)
 	{
-		if (coord.x < 0 || coord.x > 18 ||
-		    coord.y < 0 || coord.y > 18)
+		if (test_range(coord))
 			throw OutOfRange();
 
 		return m_board[coord.x + 19 * coord.y];
 	}
 
+    bool test_range( Coordinate coord) {
+        return coord.x < 0 || coord.x > 18 ||
+        coord.y < 0 || coord.y > 18;
+    }
+    
 	PointType point(int xIn, int yIn)
 	{
 		if (xIn < 0 || xIn > 18 ||

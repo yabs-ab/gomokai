@@ -8,7 +8,6 @@
 #include "AndersGomoku.hpp"
 //#include "nagy.cpp"
 #include "petersclient.hpp"
-
 #include "ozan_gomoku_client.cpp"
 
 bool five_across(const Board& b, Coordinate c)
