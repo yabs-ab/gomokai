@@ -11,17 +11,40 @@ class MyClient1 : public GomokuClient
 
 	bool check_if_in_range(int x, int y)
 	{
-		if(x>=0 && x<19 && y>=0 && y<19)
-			return true;
-		else return false;
+		return x>=0 && x<19 && y>=0 && y<19;
 	}
 
+	bool check_color_existence(int x, int y, PointType colortocheckfor, Board& board)
+	{
+		return check_if_in_range(x,y) && board.point(Coordinate(x,y))==colortocheckfor;
+	}
+
+	bool check_color_empty(int x, int y, Board& board)
+	{
+		return check_if_in_range(x,y) && board.point(Coordinate(x,y))==EMPTY;
+	}
+
+	Coordinate check_and_set_point_if_empty(int x, int y, Board& board)
+	{
+		if(check_color_empty(x,y,board))
+		{
+			Coordinate c(x,y);
+			board.set_point(c,m_color);
+			nomovemade=false;
+			return c;
+		}
+		else return Coordinate(-1,-1);
+	}
+
+	//try to avoid making the random move on the edges of the Board
 	Coordinate random_move(Board& board)
 	{
 		while(nomovemade)
 		{
-			int x = rand() % 19; 	
-			int y = rand() % 19;
+			//FIXME: only consider 18x18, is this a problem?
+			// 1-17
+			int x = rand() % 17+1;
+			int y = rand() % 17+1;
 			Coordinate c(x,y);
 			//std::cout<<x<<" "<<y<<std::endl;
 			if(board.point(c)==EMPTY)
@@ -34,14 +57,38 @@ class MyClient1 : public GomokuClient
 
 	}
 
-	bool check_color_existence(int x, int y, PointType colortocheckfor, Board& board)
+	Coordinate make_move_near_my_own(Board& board)
 	{
-		return check_if_in_range(x,y) && board.point(Coordinate(x,y))==colortocheckfor;
-	}
-
-	bool check_color_empty(int x, int y, Board& board)
-	{
-		return check_if_in_range(x,y) && board.point(Coordinate(x,y))==EMPTY;
+		Coordinate c(-1,-1);
+		for(int x=0; x<19; x++)
+		{
+			for(int y=0; y<19; y++)
+			{
+				//std::cout<<x<<" "<<y<<std::endl;
+				PointType p = board.point(Coordinate(x,y));
+				if(p==m_color)
+				{
+					c=check_and_set_point_if_empty(x+1,y,board);
+					if(!nomovemade)
+						return c;
+					c=check_and_set_point_if_empty(x-1,y,board);
+					if(!nomovemade)
+						return c;
+					c=check_and_set_point_if_empty(x,y+1,board);
+					if(!nomovemade)
+						return c;
+					c=check_and_set_point_if_empty(x,y-1,board);
+					if(!nomovemade)
+						return c;
+					c=check_and_set_point_if_empty(x-1,y-1,board);
+					if(!nomovemade)
+						return c;
+					c=check_and_set_point_if_empty(x+1,y+1,board);
+					if(!nomovemade)
+						return c;
+				}
+			}
+		}
 	}
 
 	Coordinate go_over_the_board_four(PointType colortocheckfor, Board& board)
@@ -138,6 +185,47 @@ class MyClient1 : public GomokuClient
 		}
 
 	
+	}
+
+	Coordinate go_over_the_board_three_unbounded(PointType colortocheckfor, Board& board)
+	{
+		Coordinate c(-1,-1);
+		for(int x=0; x<19; x++)
+		{
+			for(int y=0; y<19; y++)
+			{
+				//std::cout<<x<<" "<<y<<std::endl;
+				PointType p = board.point(Coordinate(x,y));
+				if(p==colortocheckfor)
+				{
+					if(check_color_existence(x+1,y,colortocheckfor,board) && check_color_existence(x+2,y,colortocheckfor,board) && check_color_empty(x+3,y,board) && check_color_empty(x-1,y,board) )
+					{
+						// set point on either side, just choose one, it doesn't matter which one
+						c=check_and_set_point_if_empty(x-1,y,board);
+						if(!nomovemade)
+							return c;
+					}
+					else if(check_color_existence(x,y+1,colortocheckfor,board) && check_color_existence(x,y+2,colortocheckfor,board) && check_color_empty(x,y+3,board) && check_color_empty(x,y-1,board) )
+					{
+						c=check_and_set_point_if_empty(x,y-1,board);
+						if(!nomovemade)
+							return c;
+					}
+					else if(check_color_existence(x+1,y+1,colortocheckfor,board) && check_color_existence(x+2,y+2,colortocheckfor,board) && check_color_empty(x+3,y+3,board) && check_color_empty(x-1,y-1,board) )
+					{
+						c=check_and_set_point_if_empty(x-1,y-1,board);
+						if(!nomovemade)
+							return c;
+					}
+					else if(check_color_existence(x+1,y-1,colortocheckfor,board) && check_color_existence(x+2,y-2,colortocheckfor,board) && check_color_empty(x+3,y-3,board) && check_color_empty(x-1,y+1,board) )
+					{
+						c=check_and_set_point_if_empty(x-1,y+1,board);
+						if(!nomovemade)
+							return c;
+					}
+				}
+			}
+		}
 	}
 
 	Coordinate go_over_the_board_three(PointType colortocheckfor, Board& board)
@@ -390,42 +478,53 @@ class MyClient1 : public GomokuClient
 		Coordinate c(-1,-1);
 
 		//DEFENSE and ATTACK for 4s
-		std::cout<<"defense lead"<<std::endl;
-		c=go_over_the_board_four(opponentColor,board);
+		std::cout<<"attack lead"<<std::endl;
+		c=go_over_the_board_four(m_color,board);
+		if(!nomovemade)
+			std::cout<<">> Ozan won!"<<std::endl;
 		if(nomovemade)
 		{
-			std::cout<<"attack lead"<<std::endl;
-			c=go_over_the_board_four(m_color,board);
+			std::cout<<"defense lead"<<std::endl;
+			c=go_over_the_board_four(opponentColor,board);
 		}
 		//DEFENSE and ATTACK for 3s
 		if(nomovemade)
 		{
-			std::cout<<"defense support"<<std::endl;
-			c=go_over_the_board_three(opponentColor,board);
+			std::cout<<"defense support 1"<<std::endl;
+			c=go_over_the_board_three_unbounded(opponentColor,board);
+			if(nomovemade)
+			{
+				std::cout<<"defense support 2"<<std::endl;
+				c=go_over_the_board_three(opponentColor,board);
+			}
 		}
 		//ATTACK
 		if(nomovemade)
 		{
-			std::cout<<"attack support"<<std::endl;
-			c=go_over_the_board_three(m_color,board); // checks only for already existing 3-same-color
+			std::cout<<"attack support 1"<<std::endl;
+			c=go_over_the_board_three_unbounded(m_color,board); // checks only for already existing 3-same-color
+			if(nomovemade)
+			{
+				std::cout<<"attack support 2"<<std::endl;
+				c=go_over_the_board_three(m_color,board); // checks only for already existing 3-same-color
+			}
 		}
 		if(nomovemade)
 		{
+			std::cout<<"random attack"<<std::endl;
+			c=make_move_near_my_own(board);
+		}
+		if(nomovemade)
+		{
+			// no own stuff, just make a move anywhere
+			//Q: is there a strategic first move?
 			// RANDOM MOVE
 			std::cout<<"random move"<<std::endl;
-			 /* initialize random seed: */
+			/* initialize random seed: */
 			srand (time(NULL));
 			c=random_move(board);
-			// TODO: check for any of my own color, and make a new move near it
-			//...
-			// no own stuff, just make a move anywhere
-			//std::cout<<"Making first move."<<std::endl;
-			//Q: is there a strategic first move?
-			//board.set_point(c,m_color);
 		}
 		return c;
-			//randomly put a point at some EMPTY area
-			// or try to find your own 3-areas and try to continue that streak
 	}
 	MyClient1(PointType color) : GomokuClient(color) {
 		opponentColor=m_color==WHITE?BLACK:WHITE;
