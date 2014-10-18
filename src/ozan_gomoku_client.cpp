@@ -183,23 +183,39 @@ class MyClient1 : public GomokuClient
 						}
 					}
 					//diagonal
-					else if ( (check_if_in_range(x-1,y-1) && board.point(Coordinate(x-1,y-1))==colortocheckfor ) && ( check_if_in_range(x+1,y+1) && board.point(Coordinate(x+1,y+1))==colortocheckfor ) )
+					else if ( (check_if_in_range(x-1,y-1) && board.point(Coordinate(x-1,y-1))==colortocheckfor ) && ( check_if_in_range(x-2,y-2) && board.point(Coordinate(x-2,y-2))==colortocheckfor ) )
 					{
-						//std::cout<<"checking.."<<std::endl;
-						// put a point at x-2,y-2 OR x+2,y+2 assuming they are still in range
-						// and assuming those points are EMPTY and not colortocheckfor
-						if( check_if_in_range(x-2,y-2) && board.point(Coordinate(x-2,y-2))==EMPTY )
+						if( check_if_in_range(x-3,y-3) && board.point(Coordinate(x-3,y-3))==EMPTY )
 						{
-							std::cout<<"x,y-"<<std::endl;
-							c=Coordinate(x-2,y-2);
+							std::cout<<"x,y- check 1"<<std::endl;
+							c=Coordinate(x-3,y-3);
 							board.set_point(c,m_color);
 							nomovemade=false;
 							return c;
 						}
-						else if( check_if_in_range(x+2,y+2) && board.point(Coordinate(x+2,y+2))==EMPTY )
+						else if( check_if_in_range(x+1,y+1) && board.point(Coordinate(x+1,y+1))==EMPTY )
 						{
-							std::cout<<"x,y+"<<std::endl;
-							c=Coordinate(x+2,y+2);
+							std::cout<<"x,y- check 2"<<std::endl;
+							c=Coordinate(x+1,y+1);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+					}
+					else if ( (check_if_in_range(x+1,y+1) && board.point(Coordinate(x+1,y+1))==colortocheckfor ) && ( check_if_in_range(x+2,y+2) && board.point(Coordinate(x+2,y+2))==colortocheckfor ) )
+					{
+						if( check_if_in_range(x+3,y+3) && board.point(Coordinate(x+3,y+3))==EMPTY )
+						{
+							std::cout<<"x,y+ check 1"<<std::endl;
+							c=Coordinate(x+3,y+3);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+						else if( check_if_in_range(x-1,y-1) && board.point(Coordinate(x-1,y-1))==EMPTY )
+						{
+							std::cout<<"x,y+ check 2"<<std::endl;
+							c=Coordinate(x-1,y-1);
 							board.set_point(c,m_color);
 							nomovemade=false;
 							return c;
