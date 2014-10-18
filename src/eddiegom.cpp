@@ -14,9 +14,7 @@ Coordinate addCoords(Coordinate a, Coordinate b) {
 }
 
 Coordinate subCoords(Coordinate a, Coordinate b) {
-    int x = (a.x - b.x >= 0) ? a.x - b.x : 0; x = (x > 18) ? 18 : x;
-    int y = (a.y - b.y >= 0) ? a.y - b.y : 0; y = (y > 18) ? 18 : y;
-    return Coordinate(x, y);
+    return Coordinate(a.x - b.x, a.y - b.y);
 }
 
 Coordinate normalizeishCoord(Coordinate a) {
@@ -79,7 +77,9 @@ Coordinate eddiegom::predictNextEnemyMove(BoardColors currBoardColors, BoardColo
     }
     else if (isNullCoord(lastMove)) {
         //Enemy has made a first move, predict its gonna be close
-        predictedMove = addCoords(currentEnemyMove, Coordinate(rand() % 2, rand() % 2));
+        do {
+            predictedMove = addCoords(currentEnemyMove, Coordinate(rand() % 2, rand() % 2));
+        } while (isEqualCoords(currentEnemyMove, predictedMove));
     }
     else {
         Coordinate enemyDirection = normalizeishCoord(subCoords(currentEnemyMove, lastMove));
