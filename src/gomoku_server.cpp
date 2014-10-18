@@ -4,7 +4,7 @@
 #include "gomoku_client.hpp"
 
 #include "randomclient.hpp"
-#include "eddsonGomokuClient.h"
+#include "eddiegom.h"
 #include "AndersGomoku.hpp"
 //#include "nagy.cpp"
 #include "petersclient.hpp"
