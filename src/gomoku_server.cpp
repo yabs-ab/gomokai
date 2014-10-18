@@ -6,7 +6,8 @@
 #include "randomclient.hpp"
 #include "eddsonGomokuClient.h"
 #include "AndersGomoku.hpp"
-#include "nagy.cpp"
+//#include "nagy.cpp"
+#include "petersclient.hpp"
 
 #include "ozan_gomoku_client.cpp"
 
@@ -51,7 +52,7 @@ int main(int, char**)
 	std::cout << "Gomoku AI challenge!" << std::endl;
 
 	MyClient1 a(WHITE);
-	AndersGomoku b(BLACK);
+	PetersClient b(BLACK);
 
 	fight(a, b);
 
