@@ -221,6 +221,45 @@ class MyClient1 : public GomokuClient
 							return c;
 						}
 					}
+					// Diagonal Check 2
+					else if ( (check_if_in_range(x-1,y+1) && board.point(Coordinate(x-1,y+1))==colortocheckfor ) && ( check_if_in_range(x-2,y+2) && board.point(Coordinate(x-2,y+2))==colortocheckfor ) )
+					{
+						if( check_if_in_range(x-3,y+3) && board.point(Coordinate(x-3,y+3))==EMPTY )
+						{
+							std::cout<<"x,y+/ check 1"<<std::endl;
+							c=Coordinate(x-3,y+3);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+						else if( check_if_in_range(x+1,y-1) && board.point(Coordinate(x+1,y-1))==EMPTY )
+						{
+							std::cout<<"x,y+/ check 2"<<std::endl;
+							c=Coordinate(x+1,y-1);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+					}
+					else if ( (check_if_in_range(x+1,y-1) && board.point(Coordinate(x+1,y-1))==colortocheckfor ) && ( check_if_in_range(x+2,y-2) && board.point(Coordinate(x+2,y-2))==colortocheckfor ) )
+					{
+						if( check_if_in_range(x+3,y-3) && board.point(Coordinate(x+3,y-3))==EMPTY )
+						{
+							std::cout<<"x,y-/ check 1"<<std::endl;
+							c=Coordinate(x+3,y-3);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+						else if( check_if_in_range(x-1,y+1) && board.point(Coordinate(x-1,y+1))==EMPTY )
+						{
+							std::cout<<"x,y-/ check 2"<<std::endl;
+							c=Coordinate(x-1,y+1);
+							board.set_point(c,m_color);
+							nomovemade=false;
+							return c;
+						}
+					}
 					else if(check_if_in_range(x-1,y-1) && board.point(Coordinate(x-1,y-1))==colortocheckfor && check_if_in_range(x+2,y+2) && board.point(Coordinate(x+2,y+2))==colortocheckfor) 
 					{
 						if( check_if_in_range(x+1,y+1) && board.point(Coordinate(x+1,y+1))==EMPTY )
