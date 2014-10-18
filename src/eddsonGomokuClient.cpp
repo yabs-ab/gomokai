@@ -12,6 +12,18 @@ Coordinate addCoords(Coordinate a, Coordinate b) {
     int y = (a.y + b.y < 18) ? a.y + b.y : 18; y = (y < 0) ? 0 : y;
 	return Coordinate(x, y);
 }
+
+Coordinate subCoords(Coordinate a, Coordinate b) {
+    return Coordinate(a.x - b.x, a.y - b.y);
+}
+
+Coordinate normalizeCoord(Coordinate a) {
+    if (a.x > 0) a.x = 1;
+    if (a.x < 0) a.x = -1;
+    if (a.y > 0) a.y = 1;
+    if (a.y < 0) a.y = -1;
+    return a;
+}
 bool isNullCoord(Coordinate coord) {
 	return isEqualCoords(coord, null_coord);
 }
@@ -50,18 +62,6 @@ Coordinate eddsonGomokuClient::getEnemysMove(BOARD_POINTS currentBoard, BOARD_PO
 	return coord;
 }
 
-Coordinate subCoords(Coordinate a, Coordinate b) {
-    return Coordinate(a.x - b.x, b.y - a.y);
-}
-
-Coordinate normalizeCoord(Coordinate a) {
-    if (a.x > 0) a.x = 1;
-    if (a.x < 0) a.x = -1;
-    if (a.y > 0) a.y = 1;
-    if (a.y < 0) a.y = -1;
-    return a;
-}
-
 Coordinate eddsonGomokuClient::predictNextMove(BOARD_POINTS currentBoard, BOARD_POINTS lastBoard) {
     static Coordinate lastMove(-1, -1);
     Coordinate currentEnemyMove = this->getEnemysMove(currentBoard, lastBoard);
@@ -71,7 +71,7 @@ Coordinate eddsonGomokuClient::predictNextMove(BOARD_POINTS currentBoard, BOARD_
         return Coordinate(rand() % 19, rand() % 19);
     }
 
-    Coordinate dir = normalizeCoord(subCoords(lastMove, currentEnemyMove));
+    Coordinate dir = normalizeCoord(subCoords(currentEnemyMove, lastMove));
 
     int fyllesvin = 0;
     while (this->board->point(addCoords(currentEnemyMove, dir)) != EMPTY)
