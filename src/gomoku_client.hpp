@@ -75,8 +75,17 @@ public:
             for(int j=0; j<19; ++j)
             {
                 if(point(j,i) == EMPTY) { cout<<" . "; }
-                if(point(j,i) == BLACK) { cout<<" O "; }
-                if(point(j,i) == WHITE) { cout<<" X "; }
+		//will only work on consoles that support ANSI escape sequences
+                if(point(j,i) == BLACK) {
+				cout<<"\033[1;31m"; //red
+				cout<<" O ";
+				cout<<"\033[0m"; //reset color
+		}
+                if(point(j,i) == WHITE) {
+				cout<<"\033[1;32m"; //green
+				cout<<" X ";
+				cout<<"\033[0m"; //reset color
+		}
             }
             cout<<endl;
         }
