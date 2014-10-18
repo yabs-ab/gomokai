@@ -48,7 +48,7 @@ class MyClient1 : public GomokuClient
 					//check vertically, horizontally, diagonally for 3 in a row
 
 					//horizontal
-					if(x<=17 && board.point(Coordinate(x+1,y))==colortocheckfor && board.point(Coordinate(x+2,y))==colortocheckfor)
+					if(check_if_in_range(x+1,y) && board.point(Coordinate(x+1,y))==colortocheckfor && check_if_in_range(x+2,y) && board.point(Coordinate(x+2,y))==colortocheckfor)
 					{
 						//std::cout<<"checking.."<<std::endl;
 						// put a point at x-1 or x+3 assuming they are still in range
@@ -70,7 +70,7 @@ class MyClient1 : public GomokuClient
 							return c;
 						}
 					}
-					else if(x>=2 && board.point(Coordinate(x-1,y))==colortocheckfor && board.point(Coordinate(x-2,y))==colortocheckfor)
+					else if(check_if_in_range(x-1,y) && board.point(Coordinate(x-1,y))==colortocheckfor && check_if_in_range(x-2,y) && board.point(Coordinate(x-2,y))==colortocheckfor)
 					{
 						//std::cout<<"checking.."<<std::endl;
 						// put a point at x-3 or x+1 assuming they are still in range
@@ -93,7 +93,7 @@ class MyClient1 : public GomokuClient
 						}
 					}
 					//vertical
-					else if(y<=17 && board.point(Coordinate(x,y+1))==colortocheckfor && board.point(Coordinate(x,y+2))==colortocheckfor) 
+					else if(check_if_in_range(x,y+1) && board.point(Coordinate(x,y+1))==colortocheckfor && check_if_in_range(x,y+2) && board.point(Coordinate(x,y+2))==colortocheckfor) 
 					{
 						//std::cout<<"checking.."<<std::endl;
 						// put a point at y-1 or y+3 assuming they are still in range
@@ -115,7 +115,7 @@ class MyClient1 : public GomokuClient
 							return c;
 						}
 					}
-					else if(y>=2 && board.point(Coordinate(x,y-1))==colortocheckfor && board.point(Coordinate(x,y-2))==colortocheckfor)
+					else if(check_if_in_range(x,y-1) && board.point(Coordinate(x,y-1))==colortocheckfor && check_if_in_range(x,y-2) && board.point(Coordinate(x,y-2))==colortocheckfor)
 					{
 						//std::cout<<"checking.."<<std::endl;
 						// put a point at y-3 or y+1 assuming they are still in range
@@ -139,7 +139,7 @@ class MyClient1 : public GomokuClient
 					}
 
 					//diagonal
-					else if ( (x>=1 && y>=1 && board.point(Coordinate(x-1,y-1))==colortocheckfor ) && ( x<=18 && y<=18 && board.point(Coordinate(x+1,y+1))==colortocheckfor ) )
+					else if ( (check_if_in_range(x-1,y-1) && board.point(Coordinate(x-1,y-1))==colortocheckfor ) && ( check_if_in_range(x+1,y+1) && board.point(Coordinate(x+1,y+1))==colortocheckfor ) )
 					{
 						//std::cout<<"checking.."<<std::endl;
 						// put a point at x-2,y-2 OR x+2,y+2 assuming they are still in range
@@ -181,6 +181,8 @@ class MyClient1 : public GomokuClient
 			c=go_over_the_board_three(m_color,board); // checks only for already existing 3-same-color
 		if(nomovemade)
 			std::cout<<"random move"<<std::endl;
+			 /* initialize random seed: */
+			srand (time(NULL));
 			c=random_move(board);
 			// TODO: check for any of my own color, and make a new move near it
 			//...
