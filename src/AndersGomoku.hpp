@@ -1,6 +1,6 @@
 #pragma once
 #include "gomoku_client.hpp"
-class AndersGomoku : GomokuClient {
+class AndersGomoku : public GomokuClient {
 public:
 //	AndersGomoku();
     AndersGomoku(PointType);

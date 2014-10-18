@@ -5,6 +5,10 @@
 
 #include "randomclient.hpp"
 #include "eddsonGomokuClient.h"
+#include "AndersGomoku.hpp"
+#include "nagy.cpp"
+
+#include "ozan_gomoku_client.cpp"
 
 bool five_across(const Board& b, Coordinate c)
 {
@@ -36,7 +40,7 @@ void fight(GomokuClient& a, GomokuClient& b)
 		board.print_board();
 		std::getline(std::cin, tmp);
 
-		board.set_point(a.make_a_move(board), BLACK);
+		board.set_point(b.make_a_move(board), BLACK);
 		board.print_board();
 		std::getline(std::cin, tmp);
 	}	
@@ -46,8 +50,8 @@ int main(int, char**)
 {
 	std::cout << "Gomoku AI challenge!" << std::endl;
 
-	RandomClient a(WHITE);
-	eddsonGomokuClient b(BLACK);
+	MyClient1 a(WHITE);
+	AndersGomoku b(BLACK);
 
 	fight(a, b);
 
