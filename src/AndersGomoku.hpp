@@ -11,6 +11,16 @@ public:
 	Coordinate make_a_move(Board&);
     int check_n(Board& b, Coordinate c);
     int check_val(Board& b, Coordinate c);
+    int check_val(Board& b, Coordinate c, Coordinate d, int);
+    Coordinate move(Coordinate c, Coordinate direction);
+    
+    Coordinate dirForward;
+    Coordinate dirBack;
+    Coordinate dirUp;
+    Coordinate dirDown;
+
+    std::vector<Coordinate> allDir;
+    
 };
 
 class ScoreBoard {

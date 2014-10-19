@@ -4,57 +4,73 @@
 
  // AndersGomoku::AndersGomoku(){}
 
-AndersGomoku::AndersGomoku(PointType p ) : GomokuClient(p) {
+AndersGomoku::AndersGomoku(PointType p ) : GomokuClient(p),
+    dirBack(-1,0),
+    dirForward(1,0),
+    dirUp(0,-1),
+    dirDown(0,1)
+{
 
+    allDir.push_back(dirForward);
+    allDir.push_back(dirBack);
+    allDir.push_back(dirUp);
+    allDir.push_back(dirDown);
+    allDir.push_back(move(dirForward,dirUp));
+    allDir.push_back(move(dirBack, dirUp));
+    allDir.push_back(move(dirForward,dirDown));
+    allDir.push_back(move(dirBack,dirDown));
+    
     if (m_color == WHITE)
         itsColor = BLACK;
-    
+
 }
 
 int AndersGomoku::check_n(Board& b, Coordinate c) {
-    //
-    //
-    //
     
     Coordinate temp(c.x, c.y);
     
     int ret_val = 0;
-    
-    // forward (x+1)
-    temp.x = temp.x+1;
-    if (!b.test_range(temp)) ret_val += check_val(b,temp);
-    // back (x-1)
-    temp.x = temp.x-2;
-    if (!b.test_range(temp) ) ret_val += check_val(b,temp);
-    // center
-    temp.x = temp.x+1;
-    
-    // down (y+1)
-    temp.y = temp.y+1;
-    if (!b.test_range(temp)) ret_val += check_val(b,temp);
-    // up (y-1)
-    temp.y = temp.y-2;
-    if (!b.test_range(temp)) ret_val += check_val(b,temp);
-    
-    // up (y-1), forward (x+1)
-    temp.x = temp.x+1;
-    if (!b.test_range(temp)) ret_val += check_val(b,temp);
-    
-    // down (y+1), forward (x+1)
-    temp.y = temp.y+2;
-    if (!b.test_range(temp)) ret_val += check_val(b,temp);
-    
-    // down (y+1), back (x-1)
-    temp.x = temp.x-2;
-    if (!b.test_range(temp)) ret_val += check_val(b,temp);
-
-    // up (y-1), back (x+1)
-    temp.y = temp.y-2;
-    if (!b.test_range(temp)) ret_val += check_val(b,temp);
+    int temp_score = 0;
+    for ( auto dir : allDir ) {
+        temp_score = check_val(b, c, dir,0);
+        if ( temp_score > ret_val ) ret_val = temp_score;
+    }
     
     return ret_val;
 }
 
+Coordinate AndersGomoku::move(Coordinate c, Coordinate direction) {
+    Coordinate temp(c.x + direction.x ,c.y + direction.y);
+    return temp;
+}
+
+int AndersGomoku::check_val(Board& b, Coordinate c, Coordinate dir, int ret_val) {
+    
+    // still on the board?
+    if ( b.test_range(c)) return ret_val;
+    if ( b.test_range(move(c,dir))) return ret_val;
+    
+    // nothing in this direction?
+    if ( b.point(c) == EMPTY && b.point(move(c,dir)) == EMPTY)
+        return ret_val;
+    
+    // one neighbour
+    if ( b.point(c) == EMPTY && b.point(move(c,dir)) != EMPTY) {
+        ++ret_val;
+        return check_val(b, move(c,dir), dir, ret_val);
+    }
+    
+    // two in a row
+    if ( b.point(c) == b.point(move(c,dir))) {
+        ++ret_val;
+        return check_val(b, move(c,dir), dir, ret_val);
+    }
+    
+    // all other cases
+    return ret_val;
+}
+                
+                
 int AndersGomoku::check_val(Board& b, Coordinate c) {
     if (b.point(c) == m_color) {
         return 1;
@@ -87,29 +103,29 @@ Coordinate AndersGomoku::make_a_move(Board& b) {
             }
         }
     }
-
-    // init draw
-    Coordinate c(3,3);
-    if ( b.point(c.x,c.y) == EMPTY ) {
-        return c;
-    }
     
-    int max_point_i=0;
+    vector<int> max_point_i;
     int max_value = 0;
     for (int i = 0; i < emptyPlaces.size(); ++i) {
         sb.set_point( emptyPlaces[i], check_n(b, emptyPlaces[i]) );
         
         if ( max_value < sb.point( emptyPlaces[i])) {
-            max_point_i = i;
+            max_point_i.erase(max_point_i.begin());
             max_value = sb.point( emptyPlaces[i]);
         }
 
+        if ( max_value == sb.point( emptyPlaces[i])) {
+            max_point_i.push_back(i);
+        }
     }
     
-//    sb.print_board();
-    cout << "Max score: " << max_value << endl;
+    sb.print_board();
+    cout << "Max score:     " << max_value << endl;
+    cout << "Num Max score: " << max_point_i.size() << endl;
     
-    return emptyPlaces[max_point_i];
+    int index = max_point_i.back();
+    
+    return emptyPlaces[index];
 }
 
 
