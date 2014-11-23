@@ -11,6 +11,8 @@ public:
 	int x;
 	int y;
 	Coordinate(int x_, int y_) : x(x_), y(y_) { }
+
+    void  print () { cout << "[" << x << "," << y << "] ";}
 };
 
 enum PointType {

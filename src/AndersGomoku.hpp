@@ -1,27 +1,6 @@
 #pragma once
 #include "gomoku_client.hpp"
-class AndersGomoku : public GomokuClient {
-public:
-
-    AndersGomoku(PointType);
-    
-    // default
-    PointType itsColor=WHITE;
-    
-	Coordinate make_a_move(Board&);
-    int check_n(Board& b, Coordinate c);
-    int check_val(Board& b, Coordinate c);
-    int check_val(Board& b, Coordinate c, Coordinate d, int);
-    Coordinate move(Coordinate c, Coordinate direction);
-    
-    Coordinate dirForward;
-    Coordinate dirBack;
-    Coordinate dirUp;
-    Coordinate dirDown;
-
-    std::vector<Coordinate> allDir;
-    
-};
+#include <list> 
 
 class ScoreBoard {
 public:
@@ -72,7 +51,7 @@ public:
         m_board[xIn + 19 * yIn] = i ;
     }
     
-    void print_board()
+    void print_sboard()
     {
         for(int i=0; i<19; ++i)
         {
@@ -80,6 +59,15 @@ public:
             {
                 if(point(j,i) == 0) {
                     cout << " . ";
+                } else if(point(j,i) == -1) {
+                    cout<<"\033[1;31m"; //red
+                    cout<<" O ";
+                    cout<<"\033[0m"; //reset color
+
+                } else if(point(j,i) == -2) {
+                    cout<<"\033[1;32m"; //green
+                    cout<<" X ";
+                    cout<<"\033[0m"; //reset color
                 } else {
                     cout << " " << point(j,i) << " ";
                 }
@@ -91,4 +79,29 @@ public:
     std::vector<int> m_board;
 };
 
+
+class AndersGomoku : public GomokuClient {
+public:
+    
+    AndersGomoku(PointType);
+    
+    // default
+    PointType itsColor=WHITE;
+    
+    Coordinate make_a_move(Board&);
+    Coordinate choose_a_move(ScoreBoard& sb, std::list<Coordinate> places, int callTimes=0);
+    int check_n(Board& b, Coordinate c, PointType pt=EMPTY);
+    int check_val(Board& b, Coordinate c, Coordinate d,PointType pt, int);
+    int add_n(ScoreBoard& sb, Coordinate c, PointType pt=EMPTY);
+    Coordinate move(Coordinate c, Coordinate direction);
+    Coordinate moveBack(Coordinate c, Coordinate direction);
+    
+    Coordinate dirForward;
+    Coordinate dirBack;
+    Coordinate dirUp;
+    Coordinate dirDown;
+    
+    std::vector<Coordinate> allDir;
+    
+};
 

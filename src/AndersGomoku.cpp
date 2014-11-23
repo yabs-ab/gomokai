@@ -1,4 +1,5 @@
 #include "AndersGomoku.hpp"
+#include <list>
 #include <vector>
 #include <iostream>
 
@@ -22,17 +23,18 @@ AndersGomoku::AndersGomoku(PointType p ) : GomokuClient(p),
     
     if (m_color == WHITE)
         itsColor = BLACK;
-
 }
 
-int AndersGomoku::check_n(Board& b, Coordinate c) {
+int AndersGomoku::check_n(Board& b, Coordinate c, PointType pt) {
     
     Coordinate temp(c.x, c.y);
     
     int ret_val = 0;
     int temp_score = 0;
     for ( auto dir : allDir ) {
-        temp_score = check_val(b, c, dir,0);
+        temp_score = check_val(b, c, dir, pt, 0);
+        
+        // Saturate the value (Should be not be sum, but wighted)
         if ( temp_score > ret_val ) ret_val = temp_score;
     }
     
@@ -44,97 +46,166 @@ Coordinate AndersGomoku::move(Coordinate c, Coordinate direction) {
     return temp;
 }
 
-int AndersGomoku::check_val(Board& b, Coordinate c, Coordinate dir, int ret_val) {
+Coordinate AndersGomoku::moveBack(Coordinate c, Coordinate direction) {
+    Coordinate temp(c.x - direction.x ,c.y - direction.y);
+    return temp;
+}
+
+
+int AndersGomoku::check_val(Board& b, Coordinate c, Coordinate dir, PointType pt, int ret_val) {
     
-    // still on the board?
+    Coordinate neighb = move(c,dir);
+    
+    // input check
     if ( b.test_range(c)) return ret_val;
-    if ( b.test_range(move(c,dir))) return ret_val;
     
-    // nothing in this direction?
-    if ( b.point(c) == EMPTY && b.point(move(c,dir)) == EMPTY)
-        return ret_val;
+    // Moving of board, return less value
+    if ( b.test_range(neighb)) return --ret_val;
     
-    // one neighbour
-    if ( b.point(c) == EMPTY && b.point(move(c,dir)) != EMPTY) {
+    // What's behind me?
+    if ( b.test_range(moveBack(c,dir))) {
+        --ret_val;
+    } else if (b.point(moveBack(c,dir)) == pt) {
         ++ret_val;
-        return check_val(b, move(c,dir), dir, ret_val);
+    } else if (b.point(moveBack(c,dir)) != pt && b.point(moveBack(c,dir)) != EMPTY) {
+        --ret_val;
     }
     
-    // two in a row
-    if ( b.point(c) == b.point(move(c,dir))) {
-        ++ret_val;
-        return check_val(b, move(c,dir), dir, ret_val);
+    // nothing in this direction?
+    if ( b.point(c) == EMPTY && b.point(neighb) == EMPTY)
+        return ret_val;
+    
+    // one of right type
+    if ( b.point(neighb) == pt) {
+        ret_val = ret_val + 2;
+        return check_val(b, neighb, dir, pt, ret_val);
+    }
+    
+    // open row
+    if ( b.point(c) == pt && b.point(neighb) == EMPTY) {
+        return ++ret_val;
     }
     
     // all other cases
     return ret_val;
 }
-                
-                
-int AndersGomoku::check_val(Board& b, Coordinate c) {
-    if (b.point(c) == m_color) {
-        return 1;
-    } else if (b.point(c) == itsColor) {
-            return -1;
-    }
-    return 0;
-}
-
 
 Coordinate AndersGomoku::make_a_move(Board& b) {
     
-    std::vector<Coordinate> emptyPlaces;
-    std::vector<Coordinate> myPlaces;
-    std::vector<Coordinate> itsPlaces;
+// List of possible placements
+    std::list<Coordinate>  myPlaces;  myPlaces.push_back(Coordinate(9,9));
+    std::list<Coordinate> itsPlaces; itsPlaces.push_back(Coordinate(9,9));
 
-    ScoreBoard sb;
-    
+// Value of placements
+    ScoreBoard mySB;
+    ScoreBoard itsSB;
+    int my_max_value  = 0;
+    int its_max_value = 0;
+
+// calculation of placments scores
     for(int i=0; i<19; ++i)
     {
         for(int j=0; j<19; ++j)
         {
             if ( b.point(i,j) == EMPTY) {
-                emptyPlaces.push_back( Coordinate(i,j));
-                sb.set_point(i,j,0);
+                mySB.set_point (i,j,check_n(b,Coordinate(i,j),m_color));
+                itsSB.set_point(i,j,check_n(b,Coordinate(i,j),itsColor));
             } else if ( b.point(i,j) == m_color) {
-                myPlaces.push_back( Coordinate(i,j));
+                mySB.set_point(i,j,-1);
+                itsSB.set_point(i,j,-1);
             } else {
+                mySB.set_point(i,j,-2);
+                itsSB.set_point(i,j,-2);
+            }
+            if (my_max_value < mySB.point(i,j)) {
+                myPlaces.clear();
+                my_max_value = mySB.point(i,j);
+                myPlaces.push_back( Coordinate(i,j));
+            }
+            if (my_max_value == mySB.point(i,j)) myPlaces.push_back( Coordinate(i,j));
+
+            if (its_max_value < itsSB.point(i,j)) {
+                itsPlaces.clear();
+                its_max_value = itsSB.point(i,j);
                 itsPlaces.push_back( Coordinate(i,j));
             }
         }
     }
     
-    vector<int> max_point_i;
-    int max_value = 0;
-    for (int i = 0; i < emptyPlaces.size(); ++i) {
-        sb.set_point( emptyPlaces[i], check_n(b, emptyPlaces[i]) );
-        
-        if ( max_value < sb.point( emptyPlaces[i])) {
-            max_point_i.erase(max_point_i.begin());
-            max_value = sb.point( emptyPlaces[i]);
-        }
+    
+    //  Score printing
+ //   itsSB.print_sboard();
+ //   mySB.print_sboard();
+ //   string tmp; getline(cin, tmp);
 
-        if ( max_value == sb.point( emptyPlaces[i])) {
-            max_point_i.push_back(i);
-        }
+    // Attack or defense?
+    if ( its_max_value > 6 ) {
+        return itsPlaces.back();
+    } else if ( my_max_value  > 2) {
+        return choose_a_move(mySB, myPlaces);
+    } else if ( itsPlaces.size() != 0 ) {
+        return itsPlaces.back();
     }
-    
-    sb.print_board();
-    cout << "Max score:     " << max_value << endl;
-    cout << "Num Max score: " << max_point_i.size() << endl;
-    
-    int index = max_point_i.back();
-    
-    return emptyPlaces[index];
+
+    // Default return
+    return Coordinate(0,0);
 }
 
+Coordinate AndersGomoku::choose_a_move(ScoreBoard& sb, std::list<Coordinate> places, int callTimes) {
+    
+    // ok, input?
+    if ( places.size() == 0) return Coordinate(9,9);
+    
+    // Done?
+    if ( places.size() == 1 or callTimes > 2) return places.back();
 
+    
+    // Calculate the max value
+    int max = 0;
+    int sum = 0;
+    for ( Coordinate c : places) {
+//        c.print();
+        sum = add_n(sb,c);
+        if (max < sum) max = sum;
+    }
+    
+    // remove scores less then max
+    for (auto i=std::begin( places); i != std::end(places); ) {
+        sum = add_n(sb,*i );
+        if ( sum < max) {
+            i = places.erase( i );
+        } else {
+            ++i;
+        }
+    }
+/*
+    // set the new scores
+    for ( Coordinate c : places) {
+        c.print();
+    }
+  */
+    
+    // print
+/*    cout << "redusing score board: " << endl;
+    sb.print_sboard();
+    string tmp; getline(cin, tmp);
+    cout << "redusing score board, " << endl;
+  */
+    return choose_a_move(sb, places, ++callTimes);
+}
 
-
-
-
-
-
+int AndersGomoku::add_n(ScoreBoard& sb, Coordinate c, PointType pt) {
+    
+    int ret_val=0;
+    int tmp =0;
+    for ( auto dir : allDir ) {
+        if ( !sb.test_range(move(c,dir))) {
+            tmp = sb.point(move(c,dir));
+            if (tmp > 0) ret_val = ret_val + tmp;
+        }
+    }
+    return ret_val;
+}
 
 
 

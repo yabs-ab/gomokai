@@ -51,7 +51,7 @@ int main(int, char**)
 	std::cout << "Gomoku AI challenge!" << std::endl;
 
 	MyClient1 a(WHITE);
-	PetersClient b(BLACK);
+	AndersGomoku  b(BLACK);
 
 	fight(a, b);
 
